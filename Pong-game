@@ -3,6 +3,8 @@ init()
 
 SW, SH = 640, 480
 FPS = 120
+PLAYER_IMG = 'paleta.jpg'
+
 
 screen = display.set_mode((SW, SH))
 display.set_caption('Pong')
@@ -12,7 +14,7 @@ class GameSprite(sprite.Sprite):
     # constructor de clase
     def __init__(self, player_image, player_x, player_y, size_x, size_y, player_speed):
         # llamamos al constructor de la clase (Sprite):
-        super().__init__(self)
+        super().__init__()
 
         # cada objeto debe almacenar una propiedad image
         self.image = transform.scale(image.load(player_image), (size_x, size_y))
@@ -25,11 +27,29 @@ class GameSprite(sprite.Sprite):
 
     # método que dibuja al personaje en la ventana
     def reset(self):
-        window.blit(self.image, (self.rect.x, self.rect.y))
+        screen.blit(self.image, (self.rect.x, self.rect.y))
 
 
 # clase del jugador principal
 class Player(GameSprite):
+    def update_p1(self):
+        keys = key.get_pressed()
+        if keys[K_w] and self.rect.y > 5:
+            self.rect.y -= self.speed
+        elif keys[K_s] and self.rect.y <= SH - 70:
+            self.rect.y += self.speed
+
+    def update_p2(self):
+            keys = key.get_pressed()
+            if keys[K_UP] and self.rect.y > 5:
+                self.rect.y -= self.speed
+            elif keys[K_DOWN] and self.rect.y <= SW - 70:
+                self.rect.y += self.speed
+
+player_1 = Player(PLAYER_IMG, 0, 100, 40, 100, 5)
+player_2 = Player(PLAYER_IMG, SW - 40, 100, 40, 100, 5)
+
+class Ball(GameSprite):
     pass
 
 
@@ -40,6 +60,12 @@ while run:
     for e in event.get():
         if e.type == QUIT:
             run = False
+
+    screen.fill((0, 0, 0))
+    player_1.reset()
+    player_2.reset()
+    player_1.update_p1()
+    player_2.update_p2()
 
     display.update()
     clock.tick(FPS)
