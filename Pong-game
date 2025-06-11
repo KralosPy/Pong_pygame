@@ -11,6 +11,9 @@ SPEED_Y = 3
 screen = display.set_mode((SW, SH))
 display.set_caption('Pong')
 
+font.init()
+font = font.Font('WDXLLubrifontTC-Regular.ttf', 50)
+
 # clase padre para otros objetos
 class GameSprite(sprite.Sprite):
     # constructor de clase
@@ -63,25 +66,36 @@ while run:
     for e in event.get():
         if e.type == QUIT:
             run = False
+    if not finish:
+        screen.fill((0, 0, 0))
+        player_1.reset()
+        player_2.reset()
+        player_1.update_p1()
+        player_2.update_p2()
+        ball.reset()
 
-    screen.fill((0, 0, 0))
-    player_1.reset()
-    player_2.reset()
-    player_1.update_p1()
-    player_2.update_p2()
-    ball.reset()
+        ball.rect.x += SPEED_X
+        ball.rect.y += SPEED_Y
 
-    ball.rect.x += SPEED_X
-    ball.rect.y += SPEED_Y
+        if ball.rect.y <=0:
+            SPEED_Y *= -1
+        if ball.rect.y >= SH - 50:
+            SPEED_Y *= -1
+        if sprite.collide_rect(ball, player_1):
+            SPEED_X *= -1
+        if sprite.collide_rect(ball, player_2):
+            SPEED_X *= -1
 
-    if ball.rect.y <=0:
-        SPEED_Y *= -1
-    if ball.rect.y >= SH - 50:
-        SPEED_Y *= -1
-    if sprite.collide_rect(ball, player_1):
-        SPEED_X *= -1
-    if sprite.collide_rect(ball, player_2):
-        SPEED_X *= -1
+        if ball.rect.x <= 0:
+            player_2_win = font.render('Ha ganado el Jugador 2', 1,
+            (0, 100, 255))
+            screen.blit(player_2_win, (20, 200))
+            finish = True
+        elif ball .rect.x >= SW:
+            player_1_win = font.render('Ha ganado el Jugador 1', 1,
+            (0, 100, 255))
+            screen.blit(player_1_win, (20, 200))
+            finish = True
 
     display.update()
     clock.tick(FPS)
