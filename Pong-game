@@ -4,7 +4,9 @@ init()
 SW, SH = 640, 480
 FPS = 120
 PLAYER_IMG = 'paleta.jpg'
-
+BALL_IMG = 'Gomita (1).png'
+SPEED_X = 3
+SPEED_Y = 3
 
 screen = display.set_mode((SW, SH))
 display.set_caption('Pong')
@@ -36,21 +38,22 @@ class Player(GameSprite):
         keys = key.get_pressed()
         if keys[K_w] and self.rect.y > 5:
             self.rect.y -= self.speed
-        elif keys[K_s] and self.rect.y <= SH - 70:
+        elif keys[K_s] and self.rect.y <= SH - 120:
             self.rect.y += self.speed
+        
 
     def update_p2(self):
             keys = key.get_pressed()
             if keys[K_UP] and self.rect.y > 5:
                 self.rect.y -= self.speed
-            elif keys[K_DOWN] and self.rect.y <= SW - 70:
+            elif keys[K_DOWN] and self.rect.y <= SH - 120:
                 self.rect.y += self.speed
+
 
 player_1 = Player(PLAYER_IMG, 0, 100, 40, 100, 5)
 player_2 = Player(PLAYER_IMG, SW - 40, 100, 40, 100, 5)
+ball = GameSprite(BALL_IMG, 50, 50, 50, 50, 5)
 
-class Ball(GameSprite):
-    pass
 
 
 clock = time.Clock()
@@ -66,6 +69,19 @@ while run:
     player_2.reset()
     player_1.update_p1()
     player_2.update_p2()
+    ball.reset()
+
+    ball.rect.x += SPEED_X
+    ball.rect.y += SPEED_Y
+
+    if ball.rect.y <=0:
+        SPEED_Y *= -1
+    if ball.rect.y >= SH - 50:
+        SPEED_Y *= -1
+    if sprite.collide_rect(ball, player_1):
+        SPEED_X *= -1
+    if sprite.collide_rect(ball, player_2):
+        SPEED_X *= -1
 
     display.update()
     clock.tick(FPS)
